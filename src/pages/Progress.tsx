@@ -3,6 +3,7 @@ import { StatCard } from "@/components/dashboard/StatCard";
 import { WeeklyChart } from "@/components/progress/WeeklyChart";
 import { AchievementCard } from "@/components/progress/AchievementCard";
 import { weeklyProgress, caloriesProgress } from "@/data/workouts";
+import { useAuth } from "@/lib/auth";
 
 const achievements = [
   {
@@ -33,6 +34,11 @@ const achievements = [
 ];
 
 const Progress = () => {
+  const { user } = useAuth();
+
+  const totalWorkouts = user?.stats.workouts ?? 0;
+  const totalCalories = user?.stats.calories ? `${Math.round(user.stats.calories / 1000)}k` : "0";
+
   return (
     <div className="min-h-screen bg-background pb-24">
       {/* Header */}
@@ -44,18 +50,8 @@ const Progress = () => {
       {/* Stats Overview */}
       <section className="px-6 mb-8">
         <div className="grid grid-cols-2 gap-4">
-          <StatCard
-            icon={Trophy}
-            label="Total Workouts"
-            value={34}
-            variant="primary"
-          />
-          <StatCard
-            icon={Flame}
-            label="Total Calories"
-            value="12.4k"
-            variant="energy"
-          />
+          <StatCard icon={Trophy} label="Total Workouts" value={totalWorkouts} variant="primary" />
+          <StatCard icon={Flame} label="Total Calories" value={totalCalories} variant="energy" />
         </div>
       </section>
 

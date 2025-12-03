@@ -4,12 +4,34 @@ import { Input } from "@/components/ui/input";
 import { WorkoutPlanCard } from "@/components/workouts/WorkoutPlanCard";
 import { workoutPlans } from "@/data/workouts";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
+
+type FavoritesMap = Record<string, boolean>;
 
 const categories = ["All", "Strength", "Cardio", "HIIT", "Yoga"] as const;
 
 const Workouts = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
+  const [favorites, setFavorites] = useState<FavoritesMap>(() => {
+    try {
+      return JSON.parse(localStorage.getItem("ftc_favs") || "{}");
+    } catch {
+      return {};
+    }
+  });
+
+  const toggleFavorite = (id: string) => {
+    setFavorites((prev) => {
+      const next = { ...prev, [id]: !prev[id] };
+      try {
+        localStorage.setItem("ftc_favs", JSON.stringify(next));
+      } catch {}
+      return next;
+    });
+  };
 
   const filteredWorkouts = workoutPlans.filter((workout) => {
     const matchesCategory = selectedCategory === "All" || workout.category === selectedCategory;
@@ -62,11 +84,15 @@ const Workouts = () => {
       <section className="px-6">
         <div className="grid gap-4">
           {filteredWorkouts.map((workout, index) => (
-            <WorkoutPlanCard
-              key={workout.id}
-              {...workout}
-              className={`animation-delay-${index * 100}`}
-            />
+            <div key={workout.id}>
+              <WorkoutPlanCard {...workout} className={`animation-delay-${index * 100}`} />
+              <div className="mt-2 flex gap-2">
+                <Button onClick={() => navigate(`/workout/${workout.id}`)} size="sm">Start</Button>
+                <Button variant="outline" size="sm" onClick={() => toggleFavorite(workout.id)}>
+                  {favorites[workout.id] ? "Unfavorite" : "Favorite"}
+                </Button>
+              </div>
+            </div>
           ))}
         </div>
 

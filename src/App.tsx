@@ -10,6 +10,10 @@ import WorkoutDetail from "./pages/WorkoutDetail";
 import Progress from "./pages/Progress";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
+import Auth from "./pages/Auth";
+import { AuthProvider } from "@/lib/auth";
+import ProtectedRoute from "@/components/ProtectedRoute";
+import Settings from "./pages/Settings";
 
 const queryClient = new QueryClient();
 
@@ -19,17 +23,21 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <div className="max-w-lg mx-auto min-h-screen relative">
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/workouts" element={<Workouts />} />
-            <Route path="/workout/:id" element={<WorkoutDetail />} />
-            <Route path="/progress" element={<Progress />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-          <BottomNav />
-        </div>
+        <AuthProvider>
+          <div className="max-w-lg mx-auto min-h-screen relative">
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/workouts" element={<Workouts />} />
+              <Route path="/workout/:id" element={<WorkoutDetail />} />
+              <Route path="/progress" element={<Progress />} />
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+              <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+            <BottomNav />
+          </div>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
